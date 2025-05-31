@@ -45,7 +45,7 @@ export const Home = () => {
 
 
   return (
-    <PageLayout title='Página inicial'>
+    <PageLayout title='TODO List'>
       <InputAdd onAdd={handleAdd} />
 
       <List>
