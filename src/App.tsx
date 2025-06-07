@@ -1,5 +1,6 @@
 import { BrowserRouter, Route, Routes, Navigate } from "react-router";
 
+import { AuthProvider } from './shared/contexts/AuthContext';
 import { AppLayout } from './shared/layout/AppLayout';
 import { Login } from './pages/public/Login';
 import { Detail } from './pages/Detail';
@@ -12,23 +13,25 @@ export function App() {
 
 
   return (
-    <BrowserRouter>
-      {isAuthenticated && (
-        <AppLayout>
-          <Routes>
-            <Route path='/' element={<Home />} />
-            <Route path='/sobre' element={<About />} />
-            <Route path='/detalhe/:id' element={<Detail />} />
+    <AuthProvider>
+      <BrowserRouter>
+        {isAuthenticated && (
+          <AppLayout>
+            <Routes>
+              <Route path='/' element={<Home />} />
+              <Route path='/sobre' element={<About />} />
+              <Route path='/detalhe/:id' element={<Detail />} />
 
-            <Route path='*' element={<Navigate to='/' />} />
+              <Route path='*' element={<Navigate to='/' />} />
+            </Routes>
+          </AppLayout>
+        )}
+        {!isAuthenticated && (
+          <Routes>
+            <Route path='*' element={<Login />} />
           </Routes>
-        </AppLayout>
-      )}
-      {!isAuthenticated && (
-        <Routes>
-          <Route path='*' element={<Login />} />
-        </Routes>
-      )}
-    </BrowserRouter>
+        )}
+      </BrowserRouter>
+    </AuthProvider>
   )
 }
