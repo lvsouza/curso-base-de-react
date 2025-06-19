@@ -1,5 +1,6 @@
 import { useNavigate, useParams } from 'react-router';
 import { useForm, type SubmitHandler } from 'react-hook-form';
+import { useEffect, useState } from 'react';
 
 import { PageLayout } from '../../../shared/layout/page-layout/PageLayout';
 import { TodoAPI, type ITodoWithoutId } from '../../../shared/services/api/TodoAPI';
@@ -7,11 +8,13 @@ import TodoDetailStyles from './Todo.module.css';
 
 
 export const TodoDetail = () => {
+  const [isLoading, setIsLoading] = useState(false);
+
   const navigate = useNavigate();
   const { id } = useParams();
 
 
-  const { register, handleSubmit, formState: { isSubmitting } } = useForm<ITodoWithoutId>({
+  const { register, handleSubmit, reset, formState: { isSubmitting } } = useForm<ITodoWithoutId>({
     defaultValues: {
       label: '',
       description: '',
@@ -19,22 +22,44 @@ export const TodoDetail = () => {
     }
   });
 
+
+  useEffect(() => {
+    if (!id || id === 'adicionar') {
+      reset();
+      return;
+    }
+
+    setIsLoading(true);
+    TodoAPI
+      .getById(id)
+      .then(data => {
+        reset(data);
+        setIsLoading(false);
+      })
+  }, [id]);
+
+
   const handleOnSubmit: SubmitHandler<ITodoWithoutId> = async ({ label, description, complete }) => {
-    await TodoAPI.create({ label, description, complete });
+    if (!id || id === 'adicionar') {
+      await TodoAPI.create({ label, description, complete });
+    } else {
+      await TodoAPI.updateById(id, { label, description, complete });
+    }
 
     navigate('/todos');
   }
 
 
   return (
-    <PageLayout title='Detalhes'>
+    <PageLayout title={id === 'adicionar' ? 'Adicionar' : 'Detalhes'}>
       <form className={TodoDetailStyles.Form} onSubmit={handleSubmit(handleOnSubmit)}>
         <div className={TodoDetailStyles.FormLabelContainer}>
           <label htmlFor='label' className={TodoDetailStyles.FormLabel}>Título</label>
           <input
             id='label'
             className={TodoDetailStyles.FormInput}
-            {...register('label', { disabled: isSubmitting })}
+            {...register('label')}
+            disabled={isSubmitting || isLoading}
           />
           <span className={TodoDetailStyles.FormHelpText}>Título identificador do item</span>
         </div>
@@ -43,7 +68,8 @@ export const TodoDetail = () => {
           <input
             id='description'
             className={TodoDetailStyles.FormInput}
-            {...register('description', { disabled: isSubmitting })}
+            {...register('description')}
+            disabled={isSubmitting || isLoading}
           />
           <span className={TodoDetailStyles.FormHelpText}>Descreva em mais detalhes o item a fazer</span>
         </div>
@@ -53,12 +79,13 @@ export const TodoDetail = () => {
             id='complete'
             type='checkbox'
             className={TodoDetailStyles.FormInput}
-            {...register('complete', { disabled: isSubmitting })}
+            {...register('complete')}
+            disabled={isSubmitting || isLoading}
           />
           <span className={TodoDetailStyles.FormHelpText}>Marca o item como finalizado</span>
         </div>
 
-        <button type='submit' className={TodoDetailStyles.Button} disabled={isSubmitting}>
+        <button type='submit' className={TodoDetailStyles.Button} disabled={isSubmitting || isLoading}>
           Submit
         </button>
       </form>
