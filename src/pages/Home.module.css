@@ -1,17 +1,7 @@
-.Container {
-  gap: 16px;
-  padding: 8px;
+.ButtonContainer {
   display: flex;
-}
-
-.Input {
-  flex: 1;
-  padding: 8px;
-  font-size: 16px;
-  border: 1px solid #00000025;
-  border-radius: 4px;
-  padding-left: 16px;
-  padding-right: 16px;
+  align-items: center;
+  justify-content: end;
 }
 
 .Button {
@@ -23,6 +13,7 @@
   border-radius: 4px;
   padding-left: 16px;
   padding-right: 16px;
+  text-decoration: none;
   background: linear-gradient(90deg, #2e8b57, #3cb371);
 }
 
