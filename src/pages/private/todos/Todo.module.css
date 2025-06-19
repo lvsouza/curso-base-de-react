@@ -78,3 +78,9 @@
   color: #666;
   opacity: 0.85;
 }
+
+.FormErrorMessage {
+  font-size: 13px;
+  color: #ff0000;
+  opacity: 0.85;
+}

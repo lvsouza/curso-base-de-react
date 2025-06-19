@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useForm, type SubmitHandler } from 'react-hook-form';
 import { useNavigate, useParams } from 'react-router';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
+import { z } from 'zod/v4';
 
 import { TodoAPI, type ITodoWithoutId } from '../../../shared/services/api/TodoAPI';
 import { PageLayout } from '../../../shared/layout/page-layout/PageLayout';
@@ -11,8 +11,8 @@ import TodoDetailStyles from './Todo.module.css';
 
 const todoSchema = z.object({
   complete: z.boolean(),
-  label: z.string().min(3),
-  description: z.string().min(3),
+  label: z.string().min(3, 'Deve ter pelo menos 3 caracteres'),
+  description: z.string().min(3, 'Deve ter pelo menos 3 caracteres'),
 })
 
 export const TodoDetail = () => {
@@ -22,7 +22,7 @@ export const TodoDetail = () => {
   const { id } = useParams();
 
 
-  const { register, handleSubmit, reset, formState: { isSubmitting } } = useForm<ITodoWithoutId>({
+  const { register, handleSubmit, reset, formState: { isSubmitting, errors } } = useForm<ITodoWithoutId>({
     resolver: zodResolver(todoSchema),
     defaultValues: {
       label: '',
@@ -70,7 +70,10 @@ export const TodoDetail = () => {
             {...register('label')}
             disabled={isSubmitting || isLoading}
           />
-          <span className={TodoDetailStyles.FormHelpText}>Título identificador do item</span>
+          {errors.label?.message
+            ? <span className={TodoDetailStyles.FormErrorMessage}>{errors.label.message}</span>
+            : <span className={TodoDetailStyles.FormHelpText}>Título identificador do item</span>
+          }
         </div>
         <div className={TodoDetailStyles.FormLabelContainer}>
           <label htmlFor='description' className={TodoDetailStyles.FormLabel}>Descrição</label>
@@ -80,7 +83,10 @@ export const TodoDetail = () => {
             {...register('description')}
             disabled={isSubmitting || isLoading}
           />
-          <span className={TodoDetailStyles.FormHelpText}>Descreva em mais detalhes o item a fazer</span>
+          {errors.description?.message
+            ? <span className={TodoDetailStyles.FormErrorMessage}>{errors.description.message}</span>
+            : <span className={TodoDetailStyles.FormHelpText}>Descreva em mais detalhes o item a fazer</span>
+          }
         </div>
         <div className={TodoDetailStyles.FormLabelContainer}>
           <label htmlFor='complete' className={TodoDetailStyles.FormLabel}>Finalizado</label>
@@ -91,7 +97,10 @@ export const TodoDetail = () => {
             {...register('complete')}
             disabled={isSubmitting || isLoading}
           />
-          <span className={TodoDetailStyles.FormHelpText}>Marca o item como finalizado</span>
+          {errors.complete?.message
+            ? <span className={TodoDetailStyles.FormErrorMessage}>{errors.complete.message}</span>
+            : <span className={TodoDetailStyles.FormHelpText}>Marca o item como finalizado</span>
+          }
         </div>
 
         <button type='submit' className={TodoDetailStyles.Button} disabled={isSubmitting || isLoading}>
