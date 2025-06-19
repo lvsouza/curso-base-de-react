@@ -2,6 +2,7 @@ import { createServer, Model } from 'miragejs';
 
 
 createServer({
+  // timing: 2000,
   models: {
     todos: Model
   },
