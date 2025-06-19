@@ -20,6 +20,14 @@ createServer({
       return schema.all('todos');
     });
 
+    this.get('/todos/:id', (schema, request) => {
+      const id = request.params.id;
+
+      const todo = schema.find('todos', id);
+
+      return todo;
+    });
+
     this.post('/todos', (schema, request) => {
       const attrs = JSON.parse(request.requestBody);
 
