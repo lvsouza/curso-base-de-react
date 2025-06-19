@@ -1,11 +1,19 @@
-import { useNavigate, useParams } from 'react-router';
-import { useForm, type SubmitHandler } from 'react-hook-form';
 import { useEffect, useState } from 'react';
+import { useForm, type SubmitHandler } from 'react-hook-form';
+import { useNavigate, useParams } from 'react-router';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
 
-import { PageLayout } from '../../../shared/layout/page-layout/PageLayout';
 import { TodoAPI, type ITodoWithoutId } from '../../../shared/services/api/TodoAPI';
+import { PageLayout } from '../../../shared/layout/page-layout/PageLayout';
 import TodoDetailStyles from './Todo.module.css';
 
+
+const todoSchema = z.object({
+  complete: z.boolean(),
+  label: z.string().min(3),
+  description: z.string().min(3),
+})
 
 export const TodoDetail = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -15,6 +23,7 @@ export const TodoDetail = () => {
 
 
   const { register, handleSubmit, reset, formState: { isSubmitting } } = useForm<ITodoWithoutId>({
+    resolver: zodResolver(todoSchema),
     defaultValues: {
       label: '',
       description: '',
