@@ -44,3 +44,8 @@ body,
 .layout-header a:active {
   background-color: #ffffff4d;
 }
+
+.layout-header a.active {
+  background-color: #ffffff4d;
+}
+

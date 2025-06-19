@@ -1,14 +1,14 @@
 import { useEffect, useState } from 'react';
-
-import { TodoAPI, type ITodo } from '../shared/services/api/TodoAPI';
-import { PageLayout } from '../shared/layout/page-layout/PageLayout';
-import { TodoItem } from '../components/TodoItem';
-import HomeStyles from './Home.module.css';
-import { List } from '../components/List';
 import { Link } from 'react-router';
 
+import { TodoAPI, type ITodo } from '../../../shared/services/api/TodoAPI';
+import { PageLayout } from '../../../shared/layout/page-layout/PageLayout';
+import { TodoItem } from '../../../components/TodoItem';
+import { List } from '../../../components/List';
+import TodoStyles from './Todo.module.css';
 
-export const Home = () => {
+
+export const Todo = () => {
   const [list, setList] = useState<ITodo[]>([]);
 
 
@@ -42,8 +42,8 @@ export const Home = () => {
 
   return (
     <PageLayout title='TODO List'>
-      <div className={HomeStyles.ButtonContainer}>
-        <Link to='/detalhe/adicionar' className={HomeStyles.Button}>
+      <div className={TodoStyles.ButtonContainer}>
+        <Link to='/todos/detalhe/adicionar' className={TodoStyles.Button}>
           Adicionar
         </Link>
       </div>

@@ -14,7 +14,7 @@ interface ITodoItemProps {
 export const TodoItem = ({ id, label, complete, onComplete, onRemove }: ITodoItemProps) => {
   return (
     <li key={id} className={TodoItemStyles.Item} data-complete={complete}>
-      <Link to={`/detalhe/${id}`} className={TodoItemStyles.Text}>
+      <Link to={`/todos/detalhe/${id}`} className={TodoItemStyles.Text}>
         {label}
       </Link>
 

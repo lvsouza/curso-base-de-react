@@ -1,4 +1,4 @@
-import { PageLayout } from '../shared/layout/page-layout/PageLayout';
+import { PageLayout } from '../../shared/layout/page-layout/PageLayout';
 
 
 export const About = () => {
