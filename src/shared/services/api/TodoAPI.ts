@@ -9,14 +9,14 @@ export interface ITodo {
   label: string;
   complete: boolean;
   description: string;
-  completeAt: string;
+  completeAt?: string;
 }
 
 export interface ITodoWithoutId {
   label: string;
   complete: boolean;
   description: string;
-  completeAt: string;
+  completeAt?: string;
 }
 
 export const TodoAPI = {

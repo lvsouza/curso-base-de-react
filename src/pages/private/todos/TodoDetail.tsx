@@ -124,8 +124,8 @@ export const TodoDetail = () => {
           <div className={TodoDetailStyles.FormLabelContainer}>
             <label htmlFor='completeAt' className={TodoDetailStyles.FormLabel}>Data de finalização</label>
             <input
-              type='date'
               id='completeAt'
+              type='datetime-local'
               className={TodoDetailStyles.FormInput}
               {...register('completeAt')}
               disabled={isSubmitting || isLoading}
