@@ -2,7 +2,8 @@ import { useEffect, useState } from 'react';
 import { useForm, type SubmitHandler } from 'react-hook-form';
 import { useNavigate, useParams } from 'react-router';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { parse, isValid } from 'date-fns';
+import { parseISO, isValid } from 'date-fns';
+import { fromZonedTime } from 'date-fns-tz';
 import { z } from 'zod/v4';
 
 import { TodoAPI, type ITodoWithoutId } from '../../../shared/services/api/TodoAPI';
@@ -18,12 +19,19 @@ const todoSchema = z
     completeAt: z
       .string()
       .optional()
-      .refine((date) => {
-        if (!date) return true;
+      .refine((datetimeLocal) => {
+        if (!datetimeLocal) return true;
 
-        const parsedDate = parse(date, 'yyyy-MM-dd', new Date());
+        const parsedDate = parseISO(datetimeLocal);
         return isValid(parsedDate);
-      }, 'A data não está correta'),
+      }, 'A data não está correta')
+      .transform((datetimeLocal) => {
+        if (!datetimeLocal) throw new Error("A data não está correta");
+
+        const parsedDatetime = parseISO(datetimeLocal);
+        const utcDatetime = fromZonedTime(parsedDatetime, 'America/Sao_Paulo');
+        return utcDatetime.toISOString();
+      }),
   })
   .refine((data) => {
     if (data.complete && !data.completeAt) return false;
