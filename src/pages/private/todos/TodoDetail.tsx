@@ -10,17 +10,25 @@ import { PageLayout } from '../../../shared/layout/page-layout/PageLayout';
 import TodoDetailStyles from './Todo.module.css';
 
 
-const todoSchema = z.object({
-  complete: z.boolean(),
-  label: z.string().min(3, 'Deve ter pelo menos 3 caracteres'),
-  description: z.string().min(3, 'Deve ter pelo menos 3 caracteres'),
-  completeAt: z
-    .string()
-    .refine((date) => {
-      const parsedDate = parse(date, 'yyyy-MM-dd', new Date());
-      return isValid(parsedDate);
-    }, 'A data não está correta'),
-})
+const todoSchema = z
+  .object({
+    complete: z.boolean(),
+    label: z.string().min(3, 'Deve ter pelo menos 3 caracteres'),
+    description: z.string().min(3, 'Deve ter pelo menos 3 caracteres'),
+    completeAt: z
+      .string()
+      .optional()
+      .refine((date) => {
+        if (!date) return true;
+
+        const parsedDate = parse(date, 'yyyy-MM-dd', new Date());
+        return isValid(parsedDate);
+      }, 'A data não está correta'),
+  })
+  .refine((data) => {
+    if (data.complete && !data.completeAt) return false;
+    return true;
+  }, { path: ['completeAt'], error: 'A data precisa ser informada' })
 
 export const TodoDetail = () => {
   const [isLoading, setIsLoading] = useState(false);
