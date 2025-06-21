@@ -1,10 +1,9 @@
-import ListStyles from './List.module.css';
 
 
 export const List = ({ children }: React.PropsWithChildren) => {
 
   return (
-    <ol className={ListStyles.List}>
+    <ol className='flex flex-col p-2'>
       {children}
     </ol>
   );

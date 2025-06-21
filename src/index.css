@@ -1,2 +1,30 @@
 @import "tailwindcss";
 
+
+@layer theme {
+
+  .custom-bg-gradiente {
+    @apply text-white bg-linear-90 from-[#2e8b57] to-[#3cb371]
+  }
+
+  .custom-bg-gradiente-hover:hover {
+    @apply from-[#34985f] to-[#43cd81]
+  }
+}
+
+@layer base {
+
+  html,
+  body,
+  #root {
+    font-family: 'Segoe UI', Roboto, Arial, Helvetica, sans-serif;
+
+    @apply bg-gray-100 text-gray-800 h-full
+  }
+}
+
+@layer components {
+  .custom-bg-gradiente {
+    @apply text-white
+  }
+}

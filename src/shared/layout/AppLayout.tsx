@@ -1,24 +1,23 @@
 
 import { NavLink } from 'react-router';
-import './AppLayout.css';
 
 
 export const AppLayout = ({ children }: React.PropsWithChildren) => {
   return (
-    <div className='layout-base'>
-      <div className='layout-header'>
-        <NavLink to='/'>
+    <div className='h-full flex flex-col'>
+      <div className='flex gap-4 justify-center p-6 shadow-md custom-bg-gradiente'>
+        <NavLink className='p-2 px-4 no-underline rounded hover:bg-[#ffffff33] active:bg-[#ffffff4d] [.active]:bg-[#ffffff4d]' to='/'>
           Página inicial
         </NavLink>
-        <NavLink to='/todos'>
+        <NavLink className='p-2 px-4 no-underline rounded hover:bg-[#ffffff33] active:bg-[#ffffff4d] [.active]:bg-[#ffffff4d]' to='/todos'>
           TODOs
         </NavLink>
-        <NavLink to='/sobre'>
+        <NavLink className='p-2 px-4 no-underline rounded hover:bg-[#ffffff33] active:bg-[#ffffff4d] [.active]:bg-[#ffffff4d]' to='/sobre'>
           Sobre
         </NavLink>
       </div>
 
-      <div className='layout-content'>
+      <div>
         {children}
       </div>
     </div>

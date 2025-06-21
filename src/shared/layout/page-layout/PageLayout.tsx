@@ -1,6 +1,4 @@
 
-import PageLayoutStyles from './PageLayout.module.css';
-
 
 
 interface IPageLayoutProps {
@@ -10,11 +8,9 @@ interface IPageLayoutProps {
 export const PageLayout = ({ children, title }: IPageLayoutProps) => {
 
   return (
-    <div className={PageLayoutStyles.PageLayoutContainer}>
-      <div className={PageLayoutStyles.PageContent}>
-        <div>
-          <h1 className={PageLayoutStyles.PageTitle}>{title}</h1>
-        </div>
+    <div className="flex justify-center mt-4">
+      <div className="w-full max-w-200 bg-white shadow-md rounded-md p-4 flex flex-col gap-2">
+        <h1 className="text-4xl font-bold">{title}</h1>
 
         <div>
           {children}
