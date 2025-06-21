@@ -5,6 +5,7 @@ import { TodoAPI, type ITodo } from '../../../shared/services/api/TodoAPI';
 import { PageLayout } from '../../../shared/layout/page-layout/PageLayout';
 import { TodoItem } from '../../../components/TodoItem';
 import { List } from '../../../components/List';
+import { Button } from '@/components/ui/button';
 
 
 export const Todo = () => {
@@ -42,9 +43,11 @@ export const Todo = () => {
   return (
     <PageLayout title='TODO List'>
       <div className='flex items-center justify-end'>
-        <Link to='/todos/detalhe/adicionar' className='custom-bg-gradiente custom-bg-gradiente-hover p-2 cursor-pointer px-4 rounded'>
-          Adicionar
-        </Link>
+        <Button variant='default' asChild>
+          <Link to='/todos/detalhe/adicionar'>
+            Adicionar
+          </Link>
+        </Button>
       </div>
 
       <List>

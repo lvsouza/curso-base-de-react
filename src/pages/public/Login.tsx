@@ -1,6 +1,9 @@
 import { useState } from 'react';
 
 import { useAuthContext } from '../../shared/contexts/AuthContext';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 
 
 export const Login = () => {
@@ -26,26 +29,25 @@ export const Login = () => {
         </h1>
 
 
-        <b>Email</b>
-        <input
+        <Label htmlFor='email'>Email</Label>
+        <Input
+          id='email'
+          type='email'
           value={email}
           onChange={e => setEmail(e.target.value)}
-          className='p-2 px-3 border border-gray-300 rounded outline-0 disabled:bg-gray-100 focus:border-blue-600'
         />
 
-        <b>Senha</b>
-        <input
+        <Label htmlFor='password'>Senha</Label>
+        <Input
+          id='password'
           type='password'
           value={password}
           onChange={e => setPassword(e.target.value)}
-          className='p-2 px-3 border border-gray-300 rounded outline-0 disabled:bg-gray-100 focus:border-blue-600'
         />
 
-        <br />
-
-        <button className='custom-bg-gradiente custom-bg-gradiente-hover p-2 cursor-pointer px-4 rounded' onClick={handleLogin}>
+        <Button onClick={handleLogin}>
           Entrar
-        </button>
+        </Button>
       </div>
     </div>
   );

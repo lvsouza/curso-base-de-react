@@ -1,12 +1,20 @@
 import { useEffect, useState } from 'react';
 import { useForm, type SubmitHandler } from 'react-hook-form';
+import { parseISO, isValid, format, parse } from 'date-fns';
 import { useNavigate, useParams } from 'react-router';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { parseISO, isValid } from 'date-fns';
+import { CalendarIcon } from 'lucide-react';
 import { z } from 'zod/v4';
 
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { TodoAPI, type ITodoWithoutId } from '../../../shared/services/api/TodoAPI';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { PageLayout } from '../../../shared/layout/page-layout/PageLayout';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Calendar } from '@/components/ui/calendar';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { cn } from '@/lib/utils';
 
 
 const todoSchema = z
@@ -36,7 +44,7 @@ export const TodoDetail = () => {
   const { id } = useParams();
 
 
-  const { register, handleSubmit, reset, watch, formState: { isSubmitting, errors } } = useForm<ITodoWithoutId>({
+  const form = useForm<ITodoWithoutId>({
     resolver: zodResolver(todoSchema),
     defaultValues: {
       label: '',
@@ -46,12 +54,12 @@ export const TodoDetail = () => {
     }
   });
 
-  const complete = watch('complete');
+  const complete = form.watch('complete');
 
 
   useEffect(() => {
     if (!id || id === 'adicionar') {
-      reset();
+      form.reset();
       return;
     }
 
@@ -59,7 +67,7 @@ export const TodoDetail = () => {
     TodoAPI
       .getById(id)
       .then(data => {
-        reset(data);
+        form.reset(data);
         setIsLoading(false);
       })
   }, [id]);
@@ -78,68 +86,140 @@ export const TodoDetail = () => {
 
   return (
     <PageLayout title={id === 'adicionar' ? 'Adicionar' : 'Detalhes'}>
-      <form className='flex flex-col gap-6' onSubmit={handleSubmit(handleOnSubmit)}>
-        <div className='flex flex-col gap-1 w-90'>
-          <label htmlFor='label' className='font-bold'>Título</label>
-          <input
-            id='label'
-            className='p-2 px-3 border border-gray-300 rounded outline-0 disabled:bg-gray-100 focus:border-blue-600'
-            {...register('label')}
-            disabled={isSubmitting || isLoading}
+      <Form {...form}>
+        <form className='flex flex-col gap-6' onSubmit={form.handleSubmit(handleOnSubmit)}>
+          <FormField
+            name="label"
+            control={form.control}
+            render={({ field, fieldState, formState }) => (
+              <FormItem className='w-90'>
+                <FormLabel>Label</FormLabel>
+                <FormControl>
+                  <Input {...field} disabled={formState.isSubmitting || isLoading} />
+                </FormControl>
+                {fieldState.error?.message
+                  ? <FormMessage />
+                  : <FormDescription>
+                    Título identificador do item
+                  </FormDescription>
+                }
+              </FormItem>
+            )}
           />
-          {errors.label?.message
-            ? <span className='text-xs text-red-400'>{errors.label.message}</span>
-            : <span className='text-xs text-gray-400'>Título identificador do item</span>
-          }
-        </div>
-        <div className='flex flex-col gap-1 w-90'>
-          <label htmlFor='description' className='font-bold'>Descrição</label>
-          <input
-            id='description'
-            className='p-2 px-3 border border-gray-300 rounded outline-0 disabled:bg-gray-100 focus:border-blue-600'
-            {...register('description')}
-            disabled={isSubmitting || isLoading}
+          <FormField
+            name="description"
+            control={form.control}
+            render={({ field, fieldState, formState }) => (
+              <FormItem className='w-90'>
+                <FormLabel>Descrição</FormLabel>
+                <FormControl>
+                  <Input {...field} disabled={formState.isSubmitting || isLoading} />
+                </FormControl>
+                {fieldState.error?.message
+                  ? <FormMessage />
+                  : <FormDescription>
+                    Descreva em mais detalhes o item a fazer
+                  </FormDescription>
+                }
+              </FormItem>
+            )}
           />
-          {errors.description?.message
-            ? <span className='text-xs text-red-400'>{errors.description.message}</span>
-            : <span className='text-xs text-gray-400'>Descreva em mais detalhes o item a fazer</span>
-          }
-        </div>
-        <div className='flex flex-col gap-1 w-90'>
-          <label htmlFor='complete' className='font-bold'>Finalizado</label>
-          <input
-            id='complete'
-            type='checkbox'
-            className='p-2 px-3 border border-gray-300 rounded outline-0 disabled:bg-gray-100 focus:border-blue-600 h-5 w-5'
-            {...register('complete')}
-            disabled={isSubmitting || isLoading}
+          <FormField
+            name="complete"
+            control={form.control}
+            render={({ field, fieldState, formState }) => (
+              <FormItem className='w-90'>
+                <FormLabel>Finalizado</FormLabel>
+                <FormControl>
+                  <Checkbox
+                    checked={field.value}
+                    disabled={formState.isSubmitting || isLoading}
+                    onCheckedChange={checked => field.onChange(checked)}
+                  />
+                </FormControl>
+                {fieldState.error?.message
+                  ? <FormMessage />
+                  : <FormDescription>
+                    Marca o item como finalizado
+                  </FormDescription>
+                }
+              </FormItem>
+            )}
           />
-          {errors.complete?.message
-            ? <span className='text-xs text-red-400'>{errors.complete.message}</span>
-            : <span className='text-xs text-gray-400'>Marca o item como finalizado</span>
-          }
-        </div>
-        {complete && (
-          <div className='flex flex-col gap-1 w-90'>
-            <label htmlFor='completeAt' className='font-bold'>Data de finalização</label>
-            <input
-              id='completeAt'
-              type='datetime-local'
-              className='p-2 px-3 border border-gray-300 rounded outline-0 disabled:bg-gray-100 focus:border-blue-600'
-              {...register('completeAt')}
-              disabled={isSubmitting || isLoading}
-            />
-            {errors.completeAt?.message
-              ? <span className='text-xs text-red-400'>{errors.completeAt.message}</span>
-              : <span className='text-xs text-gray-400'>Data em que o item foi finalizado</span>
-            }
-          </div>
-        )}
+          {complete && (
+            <FormField
+              name="completeAt"
+              control={form.control}
+              render={({ field, fieldState, formState }) => (
+                <FormItem className='w-90'>
+                  <FormLabel>Data e hora de finalização</FormLabel>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <FormControl>
+                        <div className='flex gap-2'>
+                          <Button
+                            type='button'
+                            variant="outline"
+                            disabled={formState.isSubmitting || isLoading}
+                            className={cn("w-[240px] pl-3 text-left font-normal", !field.value && "text-muted-foreground")}
+                          >
+                            {field.value ? format(field.value, "PPP") : <span>Selecione uma data</span>}
+                            <CalendarIcon className="h-4 w-4 opacity-50 ml-auto" />
+                          </Button>
 
-        <button type='submit' className='custom-bg-gradiente custom-bg-gradiente-hover p-2 cursor-pointer px-4 rounded self-start' disabled={isSubmitting || isLoading}>
-          Salvar
-        </button>
-      </form>
+                          <Input
+                            step="1"
+                            type="time"
+                            onClick={e => e.stopPropagation()}
+                            disabled={formState.isSubmitting || isLoading}
+                            value={field.value ? format(parseISO(field.value), 'HH:mm:ss') : ''}
+                            className="bg-background appearance-none [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-calendar-picker-indicator]:appearance-none"
+                            onChange={e => {
+                              if (!e.target.value) {
+                                field.onChange(undefined);
+                                return;
+                              }
+
+                              const parsedDate = field.value ? parseISO(field.value) : new Date();
+                              const parsedDatetime = parse(e.target.value, 'HH:mm:ss', parsedDate);
+
+                              field.onChange(format(parsedDatetime, "yyyy-MM-dd'T'HH:mm"));
+                            }}
+                          />
+                        </div>
+                      </FormControl>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                      <Calendar
+                        mode="single"
+                        captionLayout="dropdown"
+                        selected={field.value ? parseISO(field.value) : undefined}
+                        onSelect={value => field.onChange(value ? format(value, "yyyy-MM-dd'T'HH:mm") : undefined)}
+                      />
+                    </PopoverContent>
+                  </Popover>
+                  {fieldState.error?.message
+                    ? <FormMessage />
+                    : <FormDescription>
+                      Data em que o item foi finalizado
+
+                      {field.value && (
+                        <Button variant='link' type='button' className='py-0 h-auto' onClick={() => field.onChange(undefined)}>
+                          Limpar
+                        </Button>
+                      )}
+                    </FormDescription>
+                  }
+                </FormItem>
+              )}
+            />
+          )}
+
+          <Button type='submit' className='self-start'>
+            Salvar
+          </Button>
+        </form>
+      </Form>
     </PageLayout>
   );
 };
