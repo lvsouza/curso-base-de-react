@@ -1,4 +1,6 @@
 import axios from 'axios';
+import { parseISO } from 'date-fns';
+import { formatInTimeZone, fromZonedTime } from 'date-fns-tz';
 
 
 const axiosInstance = axios.create();
@@ -19,23 +21,46 @@ export interface ITodoWithoutId {
   completeAt?: string;
 }
 
+const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+
 export const TodoAPI = {
   async getAll() {
     const response = await axiosInstance.get('/api/todos');
 
-    return response.data.todos as ITodo[];
+    const todos = response.data.todos as ITodo[];
+
+    return todos.map(todo => ({
+      ...todo,
+      completeAt: todo.completeAt ? formatInTimeZone(todo.completeAt, timezone, "yyyy-MM-dd'T'HH:mm") : undefined
+    }))
   },
   async getById(id: string) {
     const response = await axiosInstance.get(`/api/todos/${id}`);
 
-    return response.data.todos as ITodo;
+    const todo = response.data.todos as ITodo;
+    return {
+      ...todo,
+      completeAt: todo.completeAt ? formatInTimeZone(todo.completeAt, timezone, "yyyy-MM-dd'T'HH:mm") : undefined
+    };
   },
   async create(data: ITodoWithoutId) {
+    if (data.completeAt) {
+      const parsedDatetime = parseISO(data.completeAt);
+      const utcDatetime = fromZonedTime(parsedDatetime, timezone);
+      data.completeAt = utcDatetime.toISOString();
+    }
+
     const response = await axiosInstance.post('/api/todos', data);
 
     return response.data.todos as ITodo;
   },
   async updateById(id: string, data: Partial<ITodoWithoutId>) {
+    if (data.completeAt) {
+      const parsedDatetime = parseISO(data.completeAt);
+      const utcDatetime = fromZonedTime(parsedDatetime, timezone);
+      data.completeAt = utcDatetime.toISOString();
+    }
+
     await axiosInstance.put(`/api/todos/${id}`, data);
 
     return;

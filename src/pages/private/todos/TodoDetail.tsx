@@ -3,7 +3,6 @@ import { useForm, type SubmitHandler } from 'react-hook-form';
 import { useNavigate, useParams } from 'react-router';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { parseISO, isValid } from 'date-fns';
-import { fromZonedTime } from 'date-fns-tz';
 import { z } from 'zod/v4';
 
 import { TodoAPI, type ITodoWithoutId } from '../../../shared/services/api/TodoAPI';
@@ -24,14 +23,7 @@ const todoSchema = z
 
         const parsedDate = parseISO(datetimeLocal);
         return isValid(parsedDate);
-      }, 'A data não está correta')
-      .transform((datetimeLocal) => {
-        if (!datetimeLocal) throw new Error("A data não está correta");
-
-        const parsedDatetime = parseISO(datetimeLocal);
-        const utcDatetime = fromZonedTime(parsedDatetime, 'America/Sao_Paulo');
-        return utcDatetime.toISOString();
-      }),
+      }, 'A data não está correta'),
   })
   .refine((data) => {
     if (data.complete && !data.completeAt) return false;
